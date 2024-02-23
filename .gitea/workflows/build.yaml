@@ -1,0 +1,24 @@
+name: build-and-upload
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to OCIR
+        uses: docker/login-action@v3
+        with:
+          registry: uk-cardiff-1.ocir.io
+          username: ${{ secrets.OCIR_USERNAME }}
+          password: ${{ secrets.OCIR_TOKEN }}
+
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Build docker image
+        run: |
+          docker build --tag uk-cardiff-1.ocir.io/ax39baacthsg/runner-image/ubuntu-act-deb:latest .
+
+      - name: Upload docker image
+        run: docker push uk-cardiff-1.ocir.io/ax39baacthsg/runner-image/ubuntu-act-deb:latest
