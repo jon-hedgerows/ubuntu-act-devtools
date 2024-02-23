@@ -7,7 +7,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Login to OCIR
-        run: echo "${{ secrets.OCIR_TOKEN }}" | docker login --username ${{ secrets.OCIR_USERNAME }} uk-cardiff-1.ocir.io
+        run: |
+          echo "${{ secrets.OCIR_TOKEN }}" \
+            | docker login --username ${{ secrets.OCIR_USERNAME }} --password-stdin uk-cardiff-1.ocir.io
 
       - name: Check out repository code
         uses: actions/checkout@v3
@@ -17,4 +19,5 @@ jobs:
           docker build --tag uk-cardiff-1.ocir.io/ax39baacthsg/runner-image/ubuntu-act-deb:latest .
 
       - name: Upload docker image
-        run: docker push uk-cardiff-1.ocir.io/ax39baacthsg/runner-image/ubuntu-act-deb:latest
+        run: |
+          docker push uk-cardiff-1.ocir.io/ax39baacthsg/runner-image/ubuntu-act-deb:latest
