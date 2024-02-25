@@ -9,5 +9,6 @@ RUN set -eux; \
         devscripts \
         build-essential \
         git-buildpackage \
-        debhelper; \
+        debhelper \
+        equivs ; \
     apt -yy clean;
