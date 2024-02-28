@@ -1,6 +1,8 @@
 name: build-and-upload
 
-on: [push]
+on:
+  push:
+  workflow_dispatch:
 
 jobs:
   build:
