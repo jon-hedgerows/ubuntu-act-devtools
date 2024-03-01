@@ -8,17 +8,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Build docker image
+        run: |
+          docker build . --no-cache=true --tag uk-cardiff-1.ocir.io/ax39baacthsg/runner-image/ubuntu-act-deb:latest --build-arg COMMIT=$(git rev-parse --short @) --build-arg VERSION=$(git describe --tags)
+
       - name: Login to OCIR
         run: |
           echo "${{ secrets.OCIR_TOKEN }}" \
             | docker login --username ${{ secrets.OCIR_USERNAME }} --password-stdin uk-cardiff-1.ocir.io
-
-      - name: Check out repository code
-        uses: actions/checkout@v3
-
-      - name: Build docker image
-        run: |
-          docker build --tag uk-cardiff-1.ocir.io/ax39baacthsg/runner-image/ubuntu-act-deb:latest .
 
       - name: Upload docker image
         run: |
