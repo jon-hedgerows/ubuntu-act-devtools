@@ -1,0 +1,29 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Docker Build",
+            "command": "docker build . --no-cache=true --tag ubuntu-act-deb:dev --build-arg COMMIT=$(git rev-parse --short @) --build-arg VERSION=$(git describe --tags)",
+            "type": "shell",
+            "args": [],
+            "problemMatcher": [
+                "$tsc"
+            ],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true
+            },
+            "options": {
+                "statusbar": {
+                    "label": "$(package) Build ubuntu-act-deb:dev",
+                    "hide": false
+                }
+            },
+            "group": "build"
+        }
+    ]
+}

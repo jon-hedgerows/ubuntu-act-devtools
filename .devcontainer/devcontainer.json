@@ -12,6 +12,18 @@
 			"version": "latest",
 			"dockerDashComposeVersion": "v1"
 		}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"actboy168.tasks",
+				"ms-azuretools.vscode-docker",
+				"me-dutour-mathieu.vscode-github-actions",
+				"esbenp.prettier-vscode",
+				"mhutchie.git-graph",
+				"donjayamanne.githistory"
+			]
+		}
 	}
 	//
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
