@@ -2,7 +2,8 @@ name: build-and-upload
 
 on:
   push:
-  workflow_dispatch:
+    tags:
+      - "**"
 
 jobs:
   build:
@@ -13,7 +14,12 @@ jobs:
 
       - name: Build docker image
         run: |
-          docker build . --no-cache=true --tag uk-cardiff-1.ocir.io/ax39baacthsg/runner-image/ubuntu-act-deb:latest --build-arg COMMIT=$(git rev-parse --short @) --build-arg VERSION=$(git describe --tags)
+          docker build . --no-cache=true \
+            --tag uk-cardiff-1.ocir.io/ax39baacthsg/runner-image/ubuntu-act-deb:latest \
+            --tag uk-cardiff-1.ocir.io/ax39baacthsg/runner-image/ubuntu-act-deb:$GITHUB_REF_NAME \
+            --build-arg COMMIT=$(git rev-parse --short @) \
+            --build-arg VERSION=$(git describe --tags) \
+            --build-arg HOMEPAGE=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY
 
       - name: Login to OCIR
         run: |
@@ -22,4 +28,5 @@ jobs:
 
       - name: Upload docker image
         run: |
+          docker push uk-cardiff-1.ocir.io/ax39baacthsg/runner-image/ubuntu-act-deb:$GITHUB_REF_NAME
           docker push uk-cardiff-1.ocir.io/ax39baacthsg/runner-image/ubuntu-act-deb:latest

@@ -17,10 +17,10 @@ RUN set -eux; \
         dh-make ; \
     apt -yy clean;
 
-LABEL org.opencontainers.image.authors="Jon Davies <jon@hedgerows.org.uk>"
-LABEL org.opencontainers.image.url="https://git.hedgerows.org.uk/jon-hedgerows/runner-image"
-LABEL org.opencontainers.image.documentation="https://git.hedgerows.org.uk/jon-hedgerows/runner-image"
-LABEL org.opencontainers.image.source="https://git.hedgerows.org.uk/jon-hedgerows/runner-image"
+LABEL org.opencontainers.image.authors="$GITHUB_REPOSITORY_OWNER $GITHUB_SERVER_URL/$GITHUB_REPOSITORY_OWNER"
+LABEL org.opencontainers.image.url="$HOMEPAGE"
+LABEL org.opencontainers.image.documentation="$HOMEPAGE"
+LABEL org.opencontainers.image.source="$HOMEPAGE"
 LABEL org.opencontainers.image.version="$VERSION"
 LABEL org.opencontainers.image.revision="$COMMIT"
 LABEL org.opencontainers.image.vendor="Jon Davies"
