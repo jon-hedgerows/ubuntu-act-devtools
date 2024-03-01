@@ -1,6 +1,7 @@
 FROM ghcr.io/catthehacker/ubuntu:act-latest
 ARG VERSION
 ARG COMMIT
+ARG HOMEPAGE
 
 # update and install a native build kit, then clean
 RUN set -eux; \
@@ -17,7 +18,7 @@ RUN set -eux; \
         dh-make ; \
     apt -yy clean;
 
-LABEL org.opencontainers.image.authors="$GITHUB_REPOSITORY_OWNER $GITHUB_SERVER_URL/$GITHUB_REPOSITORY_OWNER"
+LABEL org.opencontainers.image.authors="Jon Davies <jon@hedgerows.org.uk>"
 LABEL org.opencontainers.image.url="$HOMEPAGE"
 LABEL org.opencontainers.image.documentation="$HOMEPAGE"
 LABEL org.opencontainers.image.source="$HOMEPAGE"
