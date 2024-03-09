@@ -1,4 +1,4 @@
-FROM ghcr.io/catthehacker/ubuntu:act-latest
+FROM ghcr.io/catthehacker/ubuntu:act-22.04
 ARG VERSION
 ARG COMMIT
 ARG HOMEPAGE
