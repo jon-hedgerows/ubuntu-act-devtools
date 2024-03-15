@@ -1,6 +1,9 @@
 name: build-and-upload
 
+# run on every new tag, plus every day at 6:05am
 on:
+  schedule:
+    - cron: '5 6 * * *'
   push:
     tags:
       - "**"
