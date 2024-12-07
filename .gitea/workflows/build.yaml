@@ -1,10 +1,5 @@
 name: gitea-build-and-upload
 
-env:
-  IMAGE_NAME: ${{ github.repository }}
-  REGISTRY: ghcr.io
-  HOMEPAGE: ${{ github.server_url }}/${{ github.repository }}
-
 on:
   # Trigger the action manually from the UI
   workflow_dispatch:
@@ -41,7 +36,7 @@ jobs:
       - name: Log in to the Gitea Container registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:
-          registry: ${{ github.server_url }}
+          registry: ${{ gitea.server_url }}
           username: ${{ gitea.repository_owner }}
           password: ${{ secrets.PKG_TOKEN}}
 
