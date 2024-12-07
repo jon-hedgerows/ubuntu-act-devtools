@@ -3,7 +3,7 @@
     "tasks": [
         {
             "label": "Docker Build",
-            "command": "docker build . --no-cache=true --tag ubuntu-act-deb:dev --build-arg COMMIT=$(git rev-parse --short @) --build-arg VERSION=$(git describe --tags)",
+            "command": "docker build . --no-cache=true --tag git.hedgerows.org.uk/jon-hedgerows/runner-image:dev --build-arg COMMIT=$(git rev-parse --short @) --build-arg VERSION=$(git describe --tags)",
             "type": "shell",
             "args": [],
             "problemMatcher": [
@@ -19,11 +19,24 @@
             },
             "options": {
                 "statusbar": {
-                    "label": "$(package) Build ubuntu-act-deb:dev",
+                    "label": "[$(package) Build runner-image:dev]",
                     "hide": false
                 }
             },
             "group": "build"
+        }
+        {
+            "label": "[$(repo-push)Push Tags to origin]",
+            "type": "shell",
+            "command": "git push --tags",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "dedicated",
+                "showReuseMessage": false,
+                "clear": true
+            }
         }
     ]
 }
