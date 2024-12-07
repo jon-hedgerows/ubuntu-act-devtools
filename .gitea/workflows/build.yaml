@@ -26,14 +26,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Log in to OCIR
+      - name: Log in to uk-cardiff-1.ocir.io/${{ secrets.OCIR_USERNAME }}
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:
           registry: uk-cardiff-1.ocir.io
           username: ${{ secrets.OCIR_USERNAME }}
           password: ${{ secrets.OCIR_TOKEN }}
 
-      - name: Log in to the Gitea Container registry
+      - name: Log in to git.hedgerows.org.uk/${{ gitea.repository_owner }}
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:
           registry: ${{ gitea.server_url }}
@@ -57,7 +57,9 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: |
+            name=uk-cardiff-1.ocir.io/${{ secrets.OCIR_USERNAME }}/${{ gitea.repository }}
+            name=git.hedgerows.org.uk/${{ gitea.repository_owner }}/${{ gitea.repository }}
           tags: |
             type=schedule,pattern={{date 'YYYYMMDD'}}
             # output 0.1.2
