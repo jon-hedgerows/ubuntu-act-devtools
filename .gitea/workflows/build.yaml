@@ -1,35 +1,95 @@
-name: build-and-upload
+name: gitea-build-and-upload
 
-# run on every new tag, plus every day at 6:05am
+env:
+  IMAGE_NAME: ${{ github.repository }}
+  REGISTRY: ghcr.io
+  HOMEPAGE: ${{ github.server_url }}/${{ github.repository }}
+
 on:
+  # Trigger the action manually from the UI
+  workflow_dispatch:
+  # Trigger the action at 06:05 on Sunday.
   schedule:
-    - cron: '5 6 * * *'
+    - cron: "5 6 * * 0"
+  # Trigger the action when I push any tag
   push:
     tags:
       - "**"
 
 jobs:
-  build:
+  build-and-push:
+    name: Build Docker Images
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+
     steps:
-      - name: Check out repository code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build docker image
-        run: |
-          docker build . --no-cache=true \
-            --tag uk-cardiff-1.ocir.io/ax39baacthsg/runner-image/ubuntu-act-deb:latest \
-            --tag uk-cardiff-1.ocir.io/ax39baacthsg/runner-image/ubuntu-act-deb:$GITHUB_REF_NAME \
-            --build-arg COMMIT=$(git rev-parse --short @) \
-            --build-arg VERSION=$(git describe --tags) \
-            --build-arg HOMEPAGE=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY
+      - name: Log in to OCIR
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: uk-cardiff-1.ocir.io
+          username: ${{ secrets.OCIR_USERNAME }}
+          password: ${{ secrets.OCIR_TOKEN }}
 
-      - name: Login to OCIR
-        run: |
-          echo "${{ secrets.OCIR_TOKEN }}" \
-            | docker login --username ${{ secrets.OCIR_USERNAME }} --password-stdin uk-cardiff-1.ocir.io
+      - name: Log in to the Gitea Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ${{ github.server_url }}
+          username: ${{ gitea.repository_owner }}
+          password: ${{ secrets.GITEA_TOKEN}}
 
-      - name: Upload docker image
-        run: |
-          docker push uk-cardiff-1.ocir.io/ax39baacthsg/runner-image/ubuntu-act-deb:$GITHUB_REF_NAME
-          docker push uk-cardiff-1.ocir.io/ax39baacthsg/runner-image/ubuntu-act-deb:latest
+      # - name: Log in to the ghcr.io Container registry, only works on github
+      #   uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+      #   with:
+      #     registry: ghcr.io
+      #     username: ${{ github.actor }}
+      #     password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=schedule,pattern={{date 'YYYYMMDD'}}
+            # output 0.1.2
+            type=semver,pattern={{version}}
+            # output 0.1
+            type=semver,pattern={{major}}.{{minor}}
+            # disabled if major zero
+            type=semver,pattern={{major}},enable=${{ !startsWith(github.ref, 'refs/tags/v0.') }}
+            # minimal (short sha)
+            type=sha
+          labels: |
+            org.opencontainers.image.description="A gitea runner image with debian build tools pre-installed."
+
+      - name: Build and push Docker image
+        id: push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          platforms: linux/amd64,linux/arm64
+
+      # # attestation only works for public repositories
+      # - name: Generate artifact attestation
+      #   uses: actions/attest-build-provenance@v1
+      #   with:
+      #     subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
+      #     subject-digest: ${{ steps.push.outputs.digest }}
+      #     push-to-registry: true

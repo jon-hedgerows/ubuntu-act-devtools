@@ -1,9 +1,9 @@
+name: github-build-and-upload
+
 env:
   IMAGE_NAME: ${{ github.repository }}
   REGISTRY: ghcr.io
   HOMEPAGE: ${{ github.server_url }}/${{ github.repository }}
-
-name: Build release Docker image
 
 on:
   # Trigger the action manually from the UI
@@ -59,6 +59,8 @@ jobs:
             type=semver,pattern={{major}},enable=${{ !startsWith(github.ref, 'refs/tags/v0.') }}
             # minimal (short sha)
             type=sha
+          labels: |
+            org.opencontainers.image.description="A gitea runner image with debian build tools pre-installed."
 
       - name: Build and push Docker image
         id: push
