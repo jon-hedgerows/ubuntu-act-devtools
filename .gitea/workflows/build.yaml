@@ -43,7 +43,7 @@ jobs:
         with:
           registry: ${{ github.server_url }}
           username: ${{ gitea.repository_owner }}
-          password: ${{ secrets.GITEA_TOKEN}}
+          password: ${{ secrets.PKG_TOKEN}}
 
       # - name: Log in to the ghcr.io Container registry, only works on github
       #   uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
