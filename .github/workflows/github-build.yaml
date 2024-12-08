@@ -1,10 +1,5 @@
 name: github-build-and-upload
 
-env:
-  IMAGE_NAME: ${{ github.repository }}
-  REGISTRY: ghcr.io
-  HOMEPAGE: ${{ github.server_url }}/${{ github.repository }}
-
 on:
   # Trigger the action manually from the UI
   workflow_dispatch:
@@ -31,10 +26,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Log in to the Container registry
+      - name: Log in to ghcr.io
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:
-          registry: ${{ env.REGISTRY }}
+          registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -48,7 +43,8 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: |
+            name=ghcr.io/${{ github.repository }}
           tags: |
             type=schedule,pattern={{date 'YYYYMMDD'}}
             # output 0.1.2
@@ -60,7 +56,7 @@ jobs:
             # minimal (short sha)
             type=sha
           labels: |
-            org.opencontainers.image.description="A gitea runner image with debian build tools pre-installed."
+            org.opencontainers.image.description="A gitea runner image based on Ubuntu 24.04 with debian build tools pre-installed."
 
       - name: Build and push Docker image
         id: push
@@ -76,6 +72,6 @@ jobs:
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v1
         with:
-          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
+          subject-name: ghcr.io/${{ github.repository }}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
