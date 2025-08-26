@@ -4,8 +4,11 @@ export DEBIAN_NONINTERACTIVE=1
 
 # adapted from https://docs.docker.com/engine/install/ubuntu/
 
-# Add Docker's official GPG key:
+# upgrade
 apt -yqq update
+apt -yqq upgrade
+
+# Add Docker's official GPG key:
 apt -yqq install ca-certificates curl
 install -m 0755 -d /etc/apt/keyrings
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
